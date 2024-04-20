@@ -1,3 +1,3 @@
 export default function FeedbackList() {
-  return <div>FeedbackList</div>;
+  return <ol className="feedback-list">FeedbackList</ol>;
 }

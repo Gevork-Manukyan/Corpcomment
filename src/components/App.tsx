@@ -3,13 +3,15 @@ import Footer from "./Footer";
 import HashtagList from "./HashtagList";
 
 function App() {
-  return <>
-    <Footer />
+  return (
+    <div className="app">
+      <Footer />
 
-    <Container />
+      <Container />
 
-    <HashtagList />
-  </>;
+      <HashtagList />
+    </div>
+  );
 }
 
 export default App;
