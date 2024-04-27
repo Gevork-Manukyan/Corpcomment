@@ -1,5 +1,5 @@
-import Container from "./Container";
-import Footer from "./Footer";
+import Container from "./layout/Container";
+import Footer from "./layout/Footer";
 import HashtagList from "./HashtagList";
 import { useEffect, useState } from "react";
 import { TFeedbackItem } from "../lib/types";
@@ -26,14 +26,17 @@ function App() {
 
     setFeedbackItems((prev) => [...prev, newItem]);
 
-    await fetch("https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks", {
-      method: "POST",
-      body: JSON.stringify(newItem),
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
+    await fetch(
+      "https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks",
+      {
+        method: "POST",
+        body: JSON.stringify(newItem),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
       }
-    })
+    );
   };
 
   useEffect(() => {
@@ -66,7 +69,12 @@ function App() {
     <div className="app">
       <Footer />
 
-      <Container feedbackItems={feedbackItems} isLoading={isLoading} errorMessage={errorMessage} handleAddToList={handleAddToList} />
+      <Container
+        feedbackItems={feedbackItems}
+        isLoading={isLoading}
+        errorMessage={errorMessage}
+        handleAddToList={handleAddToList}
+      />
 
       <HashtagList />
     </div>
