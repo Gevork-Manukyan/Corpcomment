@@ -1,4 +1,4 @@
-import { createContext, useMemo, useState } from "react";
+import { createContext } from "react";
 import { TFeedbackItem } from "../lib/types";
 import { useFeedbackItems } from "../lib/hooks";
 
@@ -23,26 +23,13 @@ export default function FeedbackItemsContextProvider({
 }) {
     
   const {
-    feedbackItems,
+    filteredFeedbackItems,
     isLoading,
     errorMessage,
     companyList,
     handleAddToList,
+    handleSelectCompany
   } = useFeedbackItems();
-
-    const [selectedCompany, setSelectedCompany] = useState("");
-
-    const filteredFeedbackItems = useMemo(
-      () =>
-        selectedCompany
-          ? feedbackItems.filter((item) => item.company === selectedCompany)
-          : feedbackItems,
-      [selectedCompany, feedbackItems]
-    );
-
-    const handleSelectCompany = (company: string) => {
-        setSelectedCompany(company);
-      };
 
   return (
     <FeedbackItemsContext.Provider

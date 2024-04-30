@@ -5,15 +5,16 @@ import { TFeedbackItem } from "./types";
 export function useFeedbackItemsContext() {
   const context = useContext(FeedbackItemsContext);
   if (!context) {
-    throw new Error ("FeedbackItemsContext is not defined in the component")
+    throw new Error("FeedbackItemsContext is not defined in the component");
   }
   return context;
 }
 
-export function useFeedbackItems () {
+export function useFeedbackItems() {
   const [feedbackItems, setFeedbackItems] = useState<TFeedbackItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [selectedCompany, setSelectedCompany] = useState("");
 
   const companyList = useMemo(
     () =>
@@ -21,6 +22,14 @@ export function useFeedbackItems () {
         .map((item) => item.company)
         .filter((company, index, array) => array.indexOf(company) === index),
     [feedbackItems]
+  );
+
+  const filteredFeedbackItems = useMemo(
+    () =>
+      selectedCompany
+        ? feedbackItems.filter((item) => item.company === selectedCompany)
+        : feedbackItems,
+    [selectedCompany, feedbackItems]
   );
 
   const handleAddToList = async (text: string) => {
@@ -57,6 +66,10 @@ export function useFeedbackItems () {
     );
   };
 
+  const handleSelectCompany = (company: string) => {
+    setSelectedCompany(company);
+  };
+
   useEffect(() => {
     const fetchFeedbackItems = async () => {
       setIsLoading(true);
@@ -83,11 +96,13 @@ export function useFeedbackItems () {
     fetchFeedbackItems();
   }, []);
 
-  return ({
+  return {
     feedbackItems,
     isLoading,
     errorMessage,
     companyList,
-    handleAddToList
-  })
+    filteredFeedbackItems,
+    handleAddToList,
+    handleSelectCompany
+  };
 }
