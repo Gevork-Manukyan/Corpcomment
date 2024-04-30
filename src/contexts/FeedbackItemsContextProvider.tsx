@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useMemo, useState } from "react";
 import { TFeedbackItem } from "../lib/types";
 import { useFeedbackItems } from "../lib/hooks";
 
@@ -21,15 +21,63 @@ export default function FeedbackItemsContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-    
-  const {
-    filteredFeedbackItems,
-    isLoading,
-    errorMessage,
-    companyList,
-    handleAddToList,
-    handleSelectCompany
-  } = useFeedbackItems();
+  const { feedbackItems, isLoading, errorMessage, setFeedbackItems } =
+    useFeedbackItems();
+  const [selectedCompany, setSelectedCompany] = useState("");
+
+  const companyList = useMemo(
+    () =>
+      feedbackItems
+        .map((item) => item.company)
+        .filter((company, index, array) => array.indexOf(company) === index),
+    [feedbackItems]
+  );
+
+  const filteredFeedbackItems = useMemo(
+    () =>
+      selectedCompany
+        ? feedbackItems.filter((item) => item.company === selectedCompany)
+        : feedbackItems,
+    [selectedCompany, feedbackItems]
+  );
+
+  const handleAddToList = async (text: string) => {
+    const extractedCompanyName = text
+      .split(" ")
+      .find((word: string) => word.includes("#"))!
+      .substring(1)
+      .toLowerCase();
+
+    const companyName =
+      extractedCompanyName[0].toUpperCase() + extractedCompanyName.substring(1);
+
+    const newItem: TFeedbackItem = {
+      id: new Date().getTime(),
+      text: text,
+      upvoteCount: 0,
+      daysAgo: 0,
+      company: companyName,
+      badgeLetter: companyName.substring(0, 1).toUpperCase(),
+    };
+
+    setFeedbackItems((prev) => [...prev, newItem]);
+
+    await fetch(
+      "https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks",
+      {
+        method: "POST",
+        body: JSON.stringify(newItem),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  };
+
+  const handleSelectCompany = (company: string) => {
+    setSelectedCompany(company);
+  };
 
   return (
     <FeedbackItemsContext.Provider
@@ -39,7 +87,7 @@ export default function FeedbackItemsContextProvider({
         errorMessage,
         companyList,
         handleAddToList,
-        handleSelectCompany
+        handleSelectCompany,
       }}
     >
       {children}
